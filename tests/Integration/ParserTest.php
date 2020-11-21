@@ -40,7 +40,7 @@ use Tests\Smalot\PdfParser\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
