@@ -1,5 +1,5 @@
 {
-    "name": "smalot/pdfparser",
+    "name": "panique/pdfparser",
     "description": "Pdf parser library. Can read and extract information from pdf file.",
     "keywords": ["PDF", "text", "parser", "parse", "extract"],
     "type": "library",
