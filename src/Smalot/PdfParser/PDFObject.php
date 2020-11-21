@@ -67,14 +67,30 @@ class PDFObject
     protected $content = null;
 
     /**
-     * @param Header $header
-     * @param string $content
+     * Configuration array.
      */
-    public function __construct(Document $document, Header $header = null, $content = null)
+    protected $cfg = [
+        // if `true` ignore spacing between letters (= fix random spaces inside words)
+        'ignore_letter_spacing' => false,
+    ];
+
+    /**
+     * PDFObject constructor
+     *
+     * @param Document $document
+     * @param Header|null $header
+     * @param null $content
+     * @param array $config
+     */
+    public function __construct(Document $document, Header $header = null, $content = null, $config = [])
     {
         $this->document = $document;
         $this->header = null !== $header ? $header : new Header();
         $this->content = $content;
+
+        if (!empty($config)) {
+            $this->cfg = $config;
+        }
     }
 
     public function init()
@@ -282,14 +298,18 @@ class PDFObject
                         if (((float) $x <= 0) ||
                             (false !== $current_position_td['y'] && (float) $y < (float) ($current_position_td['y']))
                         ) {
-                            // vertical offset
-                            $text .= "\n";
+                            if (!$this->cfg['ignore_letter_spacing']) {
+                                // vertical offset
+                                $text .= "\n";
+                            }
                         } elseif (false !== $current_position_td['x'] && (float) $x > (float) (
                                 $current_position_td['x']
                             )
                         ) {
-                            // horizontal offset
-                            $text .= ' ';
+                            if (!$this->cfg['ignore_letter_spacing']) {
+                                // horizontal offset
+                                $text .= ' ';
+                            }
                         }
                         $current_position_td = ['x' => $x, 'y' => $y];
                         break;
@@ -302,7 +322,9 @@ class PDFObject
                         if ((float) $y < 0) {
                             $text .= "\n";
                         } elseif ((float) $x <= 0) {
-                            $text .= ' ';
+                            if (!$this->cfg['ignore_letter_spacing']) {
+                                $text .= ' ';
+                            }
                         }
                         break;
 
@@ -724,7 +746,7 @@ class PDFObject
      *
      * @return PDFObject
      */
-    public static function factory(Document $document, Header $header, $content)
+    public static function factory(Document $document, Header $header, $content, $config = [])
     {
         switch ($header->get('Type')->getContent()) {
             case 'XObject':
@@ -758,7 +780,7 @@ class PDFObject
                 return new Font($document, $header, $content);
 
             default:
-                return new self($document, $header, $content);
+                return new self($document, $header, $content, $config);
         }
     }
 

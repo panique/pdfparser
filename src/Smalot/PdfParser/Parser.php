@@ -47,6 +47,14 @@ use Smalot\PdfParser\RawData\RawDataParser;
 class Parser
 {
     /**
+     * Configuration array.
+     */
+    protected $cfg = [
+        // if `true` ignore spacing between letters (= fix random spaces inside words)
+        'ignore_letter_spacing' => false,
+    ];
+
+    /**
      * @var PDFObject[]
      */
     protected $objects = [];
@@ -55,6 +63,7 @@ class Parser
 
     public function __construct($cfg = [])
     {
+        $this->cfg = array_merge($this->cfg, $cfg);
         $this->rawDataParser = new RawDataParser($cfg);
     }
 
@@ -104,6 +113,7 @@ class Parser
 
         // Create destination object.
         $document = new Document();
+        // TODO hier config setzen
         $this->objects = [];
 
         foreach ($data as $id => $structure) {
@@ -205,7 +215,7 @@ class Parser
                             $sub_content = substr($content, $position, (int) $next_position - (int) $position);
 
                             $sub_header = Header::parse($sub_content, $document);
-                            $object = PDFObject::factory($document, $sub_header, '');
+                            $object = PDFObject::factory($document, $sub_header, '', $this->cfg);
                             $this->objects[$id] = $object;
                         }
 
@@ -229,7 +239,7 @@ class Parser
         }
 
         if (!isset($this->objects[$id])) {
-            $this->objects[$id] = PDFObject::factory($document, $header, $content);
+            $this->objects[$id] = PDFObject::factory($document, $header, $content, $this->cfg);
         }
     }
 
