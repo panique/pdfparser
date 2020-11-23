@@ -147,7 +147,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * Addresses the issue with text that is "too wide" between letters, resulting in random spaces everywhere in the text.
+     * Addresses the issue with text that is "too wide" between letters, resulting in empty space characters between letters.
      * First case is result with default behaviour, second case is with config that should skip the space-handling.
      *
      * @see https://github.com/smalot/pdfparser/issues/72
@@ -161,11 +161,11 @@ class ParserTest extends TestCase
         $secondParser = new Parser(['ignore_letter_spacing' => true]);
         $document2 = $secondParser->parseFile($filename);
 
-        $expected1 = '1Der   Z we it e   W e l t kr i eg';
-        $expected2 = '1Der Zweite Weltkrieg';
+        $expected1 = '1Der   Z we it e   W e l t kr i eg' . PHP_EOL . 'Second Line';
+        $expected2 = '1Der Zweite Weltkrieg' . PHP_EOL . 'Second Line';
 
-        $this->assertStringContainsString($expected1, $document1->getText());
-        $this->assertStringContainsString($expected2, $document2->getText());
+        $this->assertEquals($expected1, $document1->getText());
+        $this->assertEquals($expected2, $document2->getText());
     }
 
     /**

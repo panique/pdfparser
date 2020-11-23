@@ -298,10 +298,8 @@ class PDFObject
                         if (((float) $x <= 0) ||
                             (false !== $current_position_td['y'] && (float) $y < (float) ($current_position_td['y']))
                         ) {
-                            if (!$this->cfg['ignore_letter_spacing']) {
-                                // vertical offset
-                                $text .= "\n";
-                            }
+                            // vertical offset
+                            $text .= "\n";
                         } elseif (false !== $current_position_td['x'] && (float) $x > (float) (
                                 $current_position_td['x']
                             )
